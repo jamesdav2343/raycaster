@@ -1,5 +1,18 @@
-pub fn pretty_print_vec(vec: &Vec<u8>, row_length: usize) {
-    let format_max_gap: usize = vec.iter().max().unwrap().to_string().len();
+use num::Num;
+
+pub fn pretty_print_vec<T>(vec: &Vec<T>, row_length: usize, gap: Option<usize>)
+where
+    T: TryInto<u8> + ToString + Copy + Ord,
+{
+    let format_max_gap: usize = gap.unwrap_or_else(|| {
+        vec.iter()
+            .map(|&val| val.try_into().unwrap_or(0))
+            .max()
+            .unwrap_or(0)
+            .to_string()
+            .len()
+    });
+
     let grid = &mut String::from("");
 
     for (i, item) in vec.iter().enumerate() {
@@ -13,8 +26,13 @@ pub fn pretty_print_vec(vec: &Vec<u8>, row_length: usize) {
     println!("{}", grid);
 }
 
-fn append_formatted_grid_item(&num: &u8, max_gap: usize, grid: &mut String) {
-    let chars: Vec<char> = num.to_string().chars().collect();
+fn append_formatted_grid_item<T>(&item: &T, max_gap: usize, grid: &mut String)
+where
+    T: TryInto<u8> + ToString + Copy + Ord,
+{
+    let cast_item = item.try_into().unwrap_or(0);
+
+    let chars: Vec<char> = cast_item.to_string().chars().collect();
 
     let num_digits: u8 = chars.len() as u8;
 
@@ -22,5 +40,5 @@ fn append_formatted_grid_item(&num: &u8, max_gap: usize, grid: &mut String) {
         grid.push_str(" ");
     }
 
-    grid.push_str(&format!("{}, ", &num.to_string()));
+    grid.push_str(&format!("{}, ", &cast_item.to_string()));
 }
