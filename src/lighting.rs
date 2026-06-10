@@ -1,4 +1,4 @@
-use crate::{Orientation};
+use crate::{Orientation, utilities::debug::pretty_print_vec};
 use std::collections::VecDeque;
 
 pub struct Lighting {
@@ -215,61 +215,93 @@ pub fn lighting(torches_pos: Vec<usize>, map: &Vec<bool>, map_size: (usize, usiz
         light_int[light_pos] = 15;
     });
 
+    println!("map:");
+    pretty_print_vec(map, map_size.0, Some(2));
+
     while !lightq.is_empty() {
+        // println!();
+        // println!("light intensity:");
+        // pretty_print_vec(&light_int, map_size.0, None);
+
         let node = *lightq.front().expect("Queue is empty");
+        // println!("node: {}", node);
+
         lightq.pop_front();
         let x = node % map_size.0;
         let y = node / map_size.0;
+        // println!("x: {}, y: {}", x, y);
+
         let light_node = light_int[node];
+        // println!("light node: {}", light_node);
 
         //negative x neighbor
-        if x > 0 {
+        if x > 0 { // these just check its in the bounds of the array
+            // println!("negative x neighbour");
             let neighbor = x - 1 + y * map_size.0;
             if !map[neighbor] && light_int[neighbor] <= light_node - 2 && light_node != 0 {
                 if light_node != 1 {
                     light_int[neighbor] = light_node - 1;
                     lightq.push_back(neighbor);
+                    // println!("updating with negative x neighbour, light_int[neighbour] = {}", light_int[neighbor]);
                 }
             }
         }
 
         //Positive x neighbor
         if x < map_size.0 - 1 {
+            println!("positive x neighbour");
             let neighbor = x + 1 + y * map_size.0;
             if !map[neighbor] && light_int[neighbor] <= light_node - 2 {
                 if light_node != 1 {
                     light_int[neighbor] = light_node - 1;
                     lightq.push_back(neighbor);
+                    println!("updating with positive x neighbour, light_int[neighbour] = {}", light_int[neighbor]);
                 }
             }
         }
 
         //negative y neighbor
         if y > 0 {
+            // println!("negative y neighbour");
             let neighbor = x + (y - 1) * map_size.0;
             if !map[neighbor] && light_int[neighbor] <= light_node - 2 {
                 if light_node != 1 {
                     light_int[neighbor] = light_node - 1;
                     lightq.push_back(neighbor);
+                    // println!("updating with negative y neighbour, light_int[neighbour] = {}", light_int[neighbor]);
                 }
             }
         }
 
         //Positive y neighbor
         if y < map_size.1 - 1 {
+            // println!("positive y neighbour");
             let neighbor = x + (y + 1) * map_size.0;
             if !map[neighbor] && light_int[neighbor] <= light_node - 2 {
                 if light_node != 1 {
                     light_int[neighbor] = light_node - 1;
                     lightq.push_back(neighbor);
+                    // println!("updating with positive y neighbour, light_int[neighbour] = {}", light_int[neighbor]);
                 }
             }
         }
     }
+    
+    println!("light intensities:");
+    pretty_print_vec(&light_int, map_size.0, None);
+
     let mut light = Vec::new();
+
+    // Modifies the values to be in the range of 0 - 1.
+    // e.g. 15 is 1, 0 is 0
+    //
     for i in light_int {
         light.push(0.8f32.powf((15 - i) as f32));
     }
+
+    println!("light intensities after modifications:");
+    println!("{:?}", light);
+
     light
 }
 

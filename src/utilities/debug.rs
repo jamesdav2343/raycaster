@@ -1,10 +1,8 @@
-use num::Num;
-
-pub fn pretty_print_vec<T>(vec: &Vec<T>, row_length: usize, gap: Option<usize>)
+pub fn pretty_print_vec<T>(vec: &Vec<T>, row_length: usize, custom_gap: Option<usize>)
 where
-    T: TryInto<u8> + ToString + Copy + Ord,
+    T: TryInto<u64> + ToString + Copy + Ord,
 {
-    let format_max_gap: usize = gap.unwrap_or_else(|| {
+    let format_max_gap: usize = custom_gap.unwrap_or_else(|| {
         vec.iter()
             .map(|&val| val.try_into().unwrap_or(0))
             .max()
@@ -28,7 +26,7 @@ where
 
 fn append_formatted_grid_item<T>(&item: &T, max_gap: usize, grid: &mut String)
 where
-    T: TryInto<u8> + ToString + Copy + Ord,
+    T: TryInto<u64> + ToString + Copy + Ord,
 {
     let cast_item = item.try_into().unwrap_or(0);
 
