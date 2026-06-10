@@ -72,7 +72,7 @@ impl MainState {
             0.0,
         )?;
 
-        set_mouse_location(ctx, Vector2::new(w * 0.5, h * 0.5)).unwrap();
+        // set_mouse_location(ctx, Vector2::new(w * 0.5, h * 0.5)).unwrap();
 
         let angles: Vec<f32> = (0..w as usize / RAYSPERPIXEL)
             .map(|r: usize| {
@@ -157,9 +157,19 @@ impl MainState {
         }
         self.player.pitch -= delta_mouse_loc_y * 0.7;
 
-        self.player.pitch = clamp(self.player.pitch, -300.0, 300.0);
+        // self.player.pitch = clamp(self.player.pitch, -300.0, 300.0);
+        self.player.pitch = clamp(0f32, -300.0, 300.0);
 
-        angle_of_rot += 0.085 * delta_mouse_loc_x;
+        if is_key_pressed(ctx, KeyCode::Q) {
+            // angle_of_rot -= 0.085;
+            angle_of_rot -= 1.2f32;
+        }
+
+        if is_key_pressed(ctx, KeyCode::E) {
+            // angle_of_rot += 0.085;
+            angle_of_rot += 1.2f32;
+        }
+
         self.player.plane = Vector2::rotate(self.player.plane, angle_of_rot.to_radians());
         self.player.dir_norm = Vector2::rotate(self.player.dir_norm, angle_of_rot.to_radians());
 
@@ -232,14 +242,6 @@ impl MainState {
             if self.player.height < 0.0 {
                 self.player.height += 30.0;
             }
-        }
-
-        if is_key_pressed(ctx, KeyCode::Q) {
-            self.player.jump += 2.0;
-        }
-
-        if is_key_pressed(ctx, KeyCode::E) {
-            self.player.jump -= 2.0;
         }
     }
 
