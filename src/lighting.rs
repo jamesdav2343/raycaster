@@ -34,7 +34,7 @@ impl Lighting {
             lighting,
             map_size,
             switch: false,
-            smooth_switch: true,
+            smooth_switch: false,
         }
     }
     pub fn get_lighting_floor(&self, x: f32, y: f32, pos: usize) -> f32 {

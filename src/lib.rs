@@ -344,14 +344,13 @@ impl MainState {
                             // side wall
                             if ray_dir_norm.x < 0.0 {
                                 orientation = Orientation::W;
-                                map_checkv.x-=1.0;
+                                map_checkv.x -= 1.0;
                             } else {
                                 orientation = Orientation::E;
-                                map_checkv.x+=1.0;
+                                map_checkv.x += 1.0;
                             }
                             wall_type = 7;
                             distance = ray_length1_d.x;
-
                         }
                     } else if orientation == Orientation::E || orientation == Orientation::W {
                         if ray_length1_d.x - 0.5 * ray_unitstep_size.x <= ray_length1_d.y {
@@ -366,10 +365,10 @@ impl MainState {
                         } else {
                             if ray_dir_norm.y < 0.0 {
                                 orientation = Orientation::S;
-                                map_checkv.y-=1.0;
+                                map_checkv.y -= 1.0;
                             } else {
                                 orientation = Orientation::N;
-                                map_checkv.y+=1.0;
+                                map_checkv.y += 1.0;
                             }
                             wall_type = 7;
                             distance = ray_length1_d.y;
@@ -429,7 +428,7 @@ impl MainState {
                 0.0
             }
         };
-     
+
         let mut tx;
         match self.intersections.orientation[j] {
             Orientation::N => {
@@ -499,7 +498,14 @@ impl MainState {
             ..(self.player.pitch + pos_z + rect_bottom_draw) as usize
         {
             if ty >= 128.0 {
-                dbg!(rect_h,rect_top,rect_bottom, ty,self.player.pitch + pos_z + rect_top,self.player.pitch + pos_z + rect_bottom_draw);
+                dbg!(
+                    rect_h,
+                    rect_top,
+                    rect_bottom,
+                    ty,
+                    self.player.pitch + pos_z + rect_top,
+                    self.player.pitch + pos_z + rect_bottom_draw
+                );
                 ty = 127.0;
             }
 
@@ -510,10 +516,10 @@ impl MainState {
                 RAYSPERPIXEL,
                 self.lighting.get_lighting_wall(
                     tx / 128.0,
-                    ty *0.0234375, //*3/128
+                    ty * 0.0234375, //*3/128
                     self.intersections.map_checkv[j],
                     &self.intersections.orientation[j],
-                )/*  + num::clamp(
+                ), /*  + num::clamp(
                            5.0/ (self.intersections.distance_fisheye[j]
                                * self.intersections.distance_fisheye[j]),
                        0.0,
@@ -604,12 +610,12 @@ impl MainState {
     }
 }
 impl EventHandler for MainState {
-    fn key_down_event(&mut self,ctx: &mut Context,keycode: KeyCode,_: KeyMods,_: bool){
-        match keycode{
-            KeyCode::L=>self.lighting.switch=!self.lighting.switch,
-            KeyCode::K=>self.lighting.smooth_switch = !self.lighting.smooth_switch,
-            KeyCode::Escape=>ggez::event::quit(ctx),
-            _=>()
+    fn key_down_event(&mut self, ctx: &mut Context, keycode: KeyCode, _: KeyMods, _: bool) {
+        match keycode {
+            KeyCode::L => self.lighting.switch = !self.lighting.switch,
+            KeyCode::K => self.lighting.smooth_switch = !self.lighting.smooth_switch,
+            KeyCode::Escape => ggez::event::quit(ctx),
+            _ => (),
         }
     }
     fn update(&mut self, ctx: &mut Context) -> GameResult {
@@ -621,6 +627,7 @@ impl EventHandler for MainState {
         for j in 0..self.angles.len() {
             self.calculate_ray(self.player.dir_norm, self.angles[j], j)?;
         }
+
         self.sprites
             .iter_mut()
             .for_each(|sprite| sprite.update(self.time));
@@ -631,7 +638,6 @@ impl EventHandler for MainState {
             }
         });
 
-        
         /*self.lighting = lighting::Lighting::new(
             vec![2 + self.map_size.0 * 3, 14 + self.map_size.0 * 7, 8 + self.map_size.0 * 24],
             &self.map.solid,
@@ -685,7 +691,10 @@ impl EventHandler for MainState {
         img_arr
             .par_chunks_mut(h as usize * 4 * RAYSPERPIXEL)
             .enumerate()
-            .for_each(|(j, slice)| self.draw_slice(slice, w as usize / RAYSPERPIXEL - j - 1, h));
+            .for_each(|(j, slice)| {
+                // println!("{:?}", slice);
+                self.draw_slice(slice, w as usize / RAYSPERPIXEL - j - 1, h);
+            });
 
         self.screen.img_arr = img_arr;
 
